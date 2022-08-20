@@ -1,6 +1,6 @@
 import { Address, ipfs, json } from "@graphprotocol/graph-ts";
 import {
-  ConfirmedAttendee,
+  ConfirmAttendee,
   NewEventCreated,
   NewRSVP,
   DepositsPaidOut,
@@ -73,10 +73,10 @@ function getOrCreateAccount(address: Address): Account {
 }
 
 export function handleNewRSVP(event: NewRSVP): void {
-  let id = event.params.eventID.toHex() + event.params.attendeeAddress.toHex();
+  let id = event.params.eventId.toHex() + event.params.attendeeAddress.toHex();
   let newRSVP = RSVP.load(id);
   let account = getOrCreateAccount(event.params.attendeeAddress);
-  let thisEvent = Event.load(event.params.eventID.toHex());
+  let thisEvent = Event.load(event.params.eventId.toHex());
   if (newRSVP == null && thisEvent != null) {
     newRSVP = new RSVP(id);
     newRSVP.attendee = account.id;
@@ -89,11 +89,11 @@ export function handleNewRSVP(event: NewRSVP): void {
   }
 }
 
-export function handleConfirmedAttendee(event: ConfirmedAttendee): void {
-  let id = event.params.eventID.toHex() + event.params.attendeeAddress.toHex();
+export function handleConfirmAttendee(event: ConfirmAttendee): void {
+  let id = event.params.eventId.toHex() + event.params.confirmAttendee.toHex();
   let newConfirmation = Confirmation.load(id);
-  let account = getOrCreateAccount(event.params.attendeeAddress);
-  let thisEvent = Event.load(event.params.eventID.toHex());
+  let account = getOrCreateAccount(event.params.confirmAttendee);
+  let thisEvent = Event.load(event.params.eventId.toHex());
   if (newConfirmation == null && thisEvent != null) {
     newConfirmation = new Confirmation(id);
     newConfirmation.attendee = account.id;
@@ -111,7 +111,7 @@ export function handleConfirmedAttendee(event: ConfirmedAttendee): void {
 }
 
 export function handleDepositsPaidOut(event: DepositsPaidOut): void {
-  let thisEvent = Event.load(event.params.eventID.toHex());
+  let thisEvent = Event.load(event.params.eventId.toHex());
   if (thisEvent) {
     thisEvent.paidOut = true;
     thisEvent.save();
